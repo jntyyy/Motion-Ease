@@ -46,6 +46,7 @@ class MotionCueService : Service() {
         overlayManager = MotionOverlayManager(applicationContext)
 
         createNotificationChannel()
+        startInForeground()
 
         // Observe settings changes
         serviceScope.launch {
@@ -171,23 +172,41 @@ class MotionCueService : Service() {
         val stopIntent = Intent(this, MotionCueService::class.java).apply {
             action = ACTION_STOP
         }
-        val stopPendingIntent = PendingIntent.getService(
-            this,
-            1,
-            stopIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+        val stopPendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            PendingIntent.getForegroundService(
+                this,
+                1,
+                stopIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+        } else {
+            PendingIntent.getService(
+                this,
+                1,
+                stopIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+        }
 
         // Action: Pause / Resume
         val toggleIntent = Intent(this, MotionCueService::class.java).apply {
             action = ACTION_TOGGLE_PAUSE
         }
-        val togglePendingIntent = PendingIntent.getService(
-            this,
-            2,
-            toggleIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+        val togglePendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            PendingIntent.getForegroundService(
+                this,
+                2,
+                toggleIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+        } else {
+            PendingIntent.getService(
+                this,
+                2,
+                toggleIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+        }
 
         val isPaused = currentSettings.isPaused
         val pauseActionTitle = if (isPaused) {
@@ -265,10 +284,12 @@ class MotionCueService : Service() {
         }
 
         fun stopService(context: Context) {
-            val intent = Intent(context, MotionCueService::class.java).apply {
-                action = ACTION_STOP
+            val intent = Intent(context, MotionCueService::class.java)
+            try {
+                context.stopService(intent)
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to stop service: ${e.message}")
             }
-            context.startService(intent)
         }
 
         fun setSimulation(context: Context, scenario: SimulationScenario?) {

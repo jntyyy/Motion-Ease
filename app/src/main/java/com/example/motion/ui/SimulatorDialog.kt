@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -21,7 +22,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.motion.model.SimulationScenario
+import com.example.ui.theme.*
 
+/**
+ * Redesigned SimulatorDialog:
+ * Flat dark rounded dialog (radius 28dp, fill #333336) with iOS blue accent #0A84FF.
+ */
 @Composable
 fun SimulatorDialog(
     currentScenario: SimulationScenario?,
@@ -29,20 +35,19 @@ fun SimulatorDialog(
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
-        Surface(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
-                .clip(RoundedCornerShape(28.dp))
-                .testTag("simulator_dialog"),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 8.dp
+                .clip(RoundedCornerShape(RadiusTokens.sheet))
+                .background(FlatCardSurface)
+                .testTag("simulator_dialog")
         ) {
             Column(
                 modifier = Modifier
                     .padding(24.dp)
                     .fillMaxWidth()
             ) {
+                // Header with circular close button
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -51,30 +56,42 @@ fun SimulatorDialog(
                     Column {
                         Text(
                             text = "Motion Simulator",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
+                            style = Typography.titleLarge,
+                            color = TextPrimary
                         )
+                        Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = "Test cues without driving",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            text = "Test cues without riding in a vehicle",
+                            style = Typography.bodySmall,
+                            color = TextSecondary
                         )
                     }
-                    IconButton(
-                        onClick = onDismiss,
-                        modifier = Modifier.testTag("close_simulator_button")
+
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(FlatHeaderButtonBg)
+                            .clickable(onClick = onDismiss)
+                            .testTag("close_simulator_button"),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = "Close simulator")
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close",
+                            tint = TextPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(18.dp))
 
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = 380.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(SimulationScenario.values()) { scenario ->
                         val isSelected = currentScenario == scenario
@@ -88,88 +105,84 @@ fun SimulatorDialog(
                             SimulationScenario.CURVY_ROAD -> Icons.Default.AltRoute
                         }
 
-                        Surface(
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(16.dp))
+                                .clip(RoundedCornerShape(RadiusTokens.md))
+                                .background(if (isSelected) IosAccentBlue.copy(alpha = 0.15f) else FlatDarkBackground)
+                                .border(
+                                    width = 1.dp,
+                                    color = if (isSelected) IosAccentBlue else Color.Transparent,
+                                    shape = RoundedCornerShape(RadiusTokens.md)
+                                )
                                 .clickable {
                                     if (isSelected) onSelectScenario(null) else onSelectScenario(scenario)
                                 }
+                                .padding(horizontal = 16.dp, vertical = 14.dp)
                                 .testTag("scenario_${scenario.name.lowercase()}"),
-                            color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                            border = if (isSelected) androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary) else null
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
+                            Box(
                                 modifier = Modifier
-                                    .padding(14.dp)
-                                    .fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(if (isSelected) IosAccentBlue else FlatCardSurface),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(42.dp)
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .background(
-                                            if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-                                        ),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = icon,
-                                        contentDescription = scenario.label,
-                                        tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = null,
+                                    tint = if (isSelected) Color.White else TextSecondary,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
 
-                                Spacer(modifier = Modifier.width(14.dp))
+                            Spacer(modifier = Modifier.width(14.dp))
 
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = scenario.label,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontSize = 15.sp,
-                                        color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Text(
-                                        text = scenario.desc,
-                                        fontSize = 12.sp,
-                                        color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = scenario.label,
+                                    style = Typography.titleMedium,
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = if (isSelected) IosAccentBlue else TextPrimary
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = scenario.desc,
+                                    style = Typography.bodySmall,
+                                    fontSize = 12.sp,
+                                    color = TextSecondary
+                                )
+                            }
 
-                                if (isSelected) {
-                                    Icon(
-                                        Icons.Default.CheckCircle,
-                                        contentDescription = "Active",
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                }
+                            if (isSelected) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "Selected",
+                                    tint = IosAccentBlue,
+                                    modifier = Modifier.size(20.dp)
+                                )
                             }
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(18.dp))
 
-                Row(
+                Button(
+                    onClick = {
+                        onSelectScenario(null)
+                        onDismiss()
+                    },
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = FlatCardDivider,
+                        contentColor = TextPrimary
+                    ),
+                    shape = RoundedCornerShape(RadiusTokens.pill)
                 ) {
-                    if (currentScenario != null) {
-                        OutlinedButton(
-                            onClick = { onSelectScenario(null) },
-                            modifier = Modifier.testTag("reset_simulation_button")
-                        ) {
-                            Text("Reset to Live Sensors")
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
-                    Button(
-                        onClick = onDismiss,
-                        modifier = Modifier.testTag("done_simulator_button")
-                    ) {
-                        Text("Done")
-                    }
+                    Text("Stop Simulation", fontWeight = FontWeight.SemiBold)
                 }
             }
         }

@@ -17,18 +17,20 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.motion.ui.*
-import com.example.ui.theme.MyApplicationTheme
+import com.example.ui.theme.*
 
 enum class AppScreen {
     DASHBOARD,
     SETTINGS,
-    DIAGNOSTICS
+    DIAGNOSTICS,
+    HELP_AND_SUPPORT
 }
 
 class MainActivity : ComponentActivity() {
@@ -45,6 +47,7 @@ class MainActivity : ComponentActivity() {
                 var showSimulatorDialog by remember { mutableStateOf(false) }
                 var showOemGuideDialog by remember { mutableStateOf(false) }
                 var showQsGuideDialog by remember { mutableStateOf(false) }
+                var showSafetyDisclaimerDialog by remember { mutableStateOf(false) }
 
                 val settings by viewModel.settings.collectAsStateWithLifecycle()
                 val processedMotion by viewModel.processedMotion.collectAsStateWithLifecycle()
@@ -73,7 +76,7 @@ class MainActivity : ComponentActivity() {
                 // Handle system back gesture for nested screens
                 if (currentScreen != AppScreen.DASHBOARD) {
                     BackHandler {
-                        currentScreen = AppScreen.DASHBOARD
+                        currentScreen = if (currentScreen == AppScreen.HELP_AND_SUPPORT) AppScreen.SETTINGS else AppScreen.DASHBOARD
                     }
                 }
 
@@ -116,6 +119,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onOpenDiagnostics = { currentScreen = AppScreen.DIAGNOSTICS },
                                 onOpenOemGuide = { showOemGuideDialog = true },
+                                onOpenHelpAndSupport = { currentScreen = AppScreen.HELP_AND_SUPPORT },
                                 onBack = { currentScreen = AppScreen.DASHBOARD }
                             )
                         }
@@ -128,6 +132,13 @@ class MainActivity : ComponentActivity() {
                                 hasOverlayPermission = hasOverlayPermission,
                                 isServiceActive = settings.isEnabled && !settings.isPaused,
                                 onBack = { currentScreen = AppScreen.DASHBOARD }
+                            )
+                        }
+
+                        AppScreen.HELP_AND_SUPPORT -> {
+                            HelpAndSupportScreen(
+                                onBack = { currentScreen = AppScreen.SETTINGS },
+                                onOpenSafetyDisclaimer = { showSafetyDisclaimerDialog = true }
                             )
                         }
                     }
@@ -154,6 +165,40 @@ class MainActivity : ComponentActivity() {
                     if (showQsGuideDialog) {
                         QuickSettingsGuideDialog(
                             onDismiss = { showQsGuideDialog = false }
+                        )
+                    }
+
+                    // Passenger Safety Disclaimer Dialog
+                    if (showSafetyDisclaimerDialog) {
+                        AlertDialog(
+                            onDismissRequest = { showSafetyDisclaimerDialog = false },
+                            containerColor = FlatCardSurface,
+                            titleContentColor = TextPrimary,
+                            textContentColor = TextSecondary,
+                            title = {
+                                Text(
+                                    text = androidx.compose.ui.res.stringResource(com.example.R.string.safety_disclaimer_title),
+                                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                                )
+                            },
+                            text = {
+                                Text(
+                                    text = androidx.compose.ui.res.stringResource(com.example.R.string.safety_disclaimer_body),
+                                    lineHeight = 20.sp
+                                )
+                            },
+                            confirmButton = {
+                                Button(
+                                    onClick = { showSafetyDisclaimerDialog = false },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = IosAccentBlue,
+                                        contentColor = androidx.compose.ui.graphics.Color.White
+                                    ),
+                                    shape = androidx.compose.foundation.shape.RoundedCornerShape(RadiusTokens.pill)
+                                ) {
+                                    Text("Understood", fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                                }
+                            }
                         )
                     }
                 }

@@ -2,68 +2,61 @@ package com.example.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+
+// Standard Spacing Scale
+object SpacingTokens {
+    val xs = 4.dp
+    val sm = 8.dp
+    val md = 12.dp
+    val lg = 16.dp
+    val xl = 20.dp
+    val xxl = 24.dp
+    val xxxl = 32.dp
+}
+
+// Corner Radius Scale
+object RadiusTokens {
+    val sm = 8.dp
+    val md = 14.dp
+    val card = 26.dp // Authoritative card radius (24-28dp)
+    val sheet = 28.dp
+    val pill = 999.dp
+    val circularHeader = 40.dp
+}
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Cyan80,
-    onPrimary = Slate900,
-    primaryContainer = Slate700,
-    onPrimaryContainer = Cyan80,
-    secondary = Indigo80,
-    onSecondary = Slate900,
-    tertiary = Teal80,
-    background = Slate900,
-    surface = Slate800,
-    surfaceVariant = Slate700,
-    onBackground = OffWhite,
-    onSurface = OffWhite,
-    onSurfaceVariant = Color(0xFFCBD5E1),
-    outline = Slate600,
-    outlineVariant = Color(0xFF334155)
+    primary = IosAccentBlue,
+    onPrimary = Color.White,
+    primaryContainer = FlatCardSurface,
+    onPrimaryContainer = IosAccentBlue,
+    secondary = TextSecondary,
+    onSecondary = Color.White,
+    tertiary = StatusActiveGreen,
+    background = FlatDarkBackground,
+    surface = FlatCardSurface,
+    surfaceVariant = FlatCardDivider,
+    onBackground = TextPrimary,
+    onSurface = TextPrimary,
+    onSurfaceVariant = TextSecondary,
+    outline = FlatCardDivider,
+    outlineVariant = TextMuted
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Cyan40,
-    onPrimary = Color.White,
-    primaryContainer = Color(0xFFE0F2FE),
-    onPrimaryContainer = Color(0xFF0369A1),
-    secondary = Indigo40,
-    onSecondary = Color.White,
-    tertiary = Teal40,
-    background = Color(0xFFF8FAFC),
-    surface = Color.White,
-    surfaceVariant = Color(0xFFF1F5F9),
-    onBackground = Color(0xFF0F172A),
-    onSurface = Color(0xFF0F172A),
-    onSurfaceVariant = Color(0xFF64748B),
-    outline = Color(0xFFCBD5E1),
-    outlineVariant = Color(0xFFE2E8F0)
-)
+private val LightColorScheme = DarkColorScheme // Flat dark theme is enforced across all environments
 
 @Composable
 fun MyApplicationTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Keep consistent branding colors by default
+    dynamicColor: Boolean = false, // Always enforce flat dark design language
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = DarkColorScheme,
         typography = Typography,
         content = content
     )

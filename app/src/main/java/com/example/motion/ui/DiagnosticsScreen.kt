@@ -3,10 +3,8 @@ package com.example.motion.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,8 +19,13 @@ import androidx.compose.ui.unit.sp
 import com.example.motion.model.ProcessedMotion
 import com.example.motion.model.RawSensorReading
 import com.example.motion.model.SensorHardwareStatus
+import com.example.ui.theme.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Redesigned DiagnosticsScreen:
+ * Flat dark gray rounded cards on #1C1C1E background, displaying live vehicle state machine,
+ * high-precision sensor telemetry, and hardware integrity.
+ */
 @Composable
 fun DiagnosticsScreen(
     hardwareStatus: SensorHardwareStatus,
@@ -32,150 +35,201 @@ fun DiagnosticsScreen(
     isServiceActive: Boolean,
     onBack: () -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Sensor Diagnostics", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack, modifier = Modifier.testTag("diagnostics_back_button")) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            )
-        }
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item {
-                Text(
-                    text = "Hardware Sensor Availability",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
+    val currentState = if (!isServiceActive) "IDLE" else processedMotion.state.name
 
-            item {
-                Surface(
-                    shape = RoundedCornerShape(18.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        SensorStatusRow("Accelerometer", hardwareStatus.hasAccelerometer, "Primary inertial source")
-                        SensorStatusRow("Gyroscope", hardwareStatus.hasGyroscope, "Angular rate & cornering")
-                        SensorStatusRow("Gravity Sensor", hardwareStatus.hasGravity, "Tilt orientation separation")
-                        SensorStatusRow("Linear Acceleration", hardwareStatus.hasLinearAcceleration, "Hardware dynamic force")
-                        SensorStatusRow("Rotation Vector", hardwareStatus.hasRotationVector, "Full 3D orientation quaternion")
-                    }
-                }
-            }
-
-            item {
-                Text(
-                    text = "Real-Time Telemetry",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            item {
-                Surface(
-                    shape = RoundedCornerShape(18.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        MetricItem("Motion Magnitude", String.format("%.3f m/s²", processedMotion.motionMagnitude))
-                        MetricItem("Sample Rate", String.format("%.1f Hz", processedMotion.sampleRateHz))
-                        MetricItem("Detection State", processedMotion.state.displayName)
-                        MetricItem("Display Rotation", "${rawReading.displayRotationDegrees}°")
-                        MetricItem("Screen Linear X", String.format("%.3f m/s²", rawReading.linearAccelX))
-                        MetricItem("Screen Linear Y", String.format("%.3f m/s²", rawReading.linearAccelY))
-                        MetricItem("Screen Linear Z", String.format("%.3f m/s²", rawReading.linearAccelZ))
-                        MetricItem("Angular Velocity Z", String.format("%.3f rad/s", rawReading.gyroZ))
-                        MetricItem("Computed Target X", String.format("%.2f", processedMotion.targetDisplacementX))
-                        MetricItem("Computed Target Y", String.format("%.2f", processedMotion.targetDisplacementY))
-                    }
-                }
-            }
-
-            item {
-                Text(
-                    text = "System & Overlay Status",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            item {
-                Surface(
-                    shape = RoundedCornerShape(18.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        SensorStatusRow("Overlay Permission", hasOverlayPermission, "SYSTEM_ALERT_WINDOW")
-                        SensorStatusRow("Foreground Service", isServiceActive, "SpecialUse service active")
-                        SensorStatusRow("Cue Visibility", processedMotion.isCueVisible, "Actively drawn on screen")
-                    }
-                }
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-        }
-    }
-}
-
-@Composable
-private fun SensorStatusRow(name: String, isAvailable: Boolean, details: String) {
-    Row(
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .fillMaxSize()
+            .background(FlatDarkBackground)
+            .windowInsetsPadding(WindowInsets.safeDrawing)
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = name, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-            Text(text = details, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-        Surface(
-            shape = RoundedCornerShape(8.dp),
-            color = if (isAvailable) Color(0xFF10B981).copy(alpha = 0.15f) else Color(0xFFEF4444).copy(alpha = 0.15f)
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 36.dp),
+            verticalArrangement = Arrangement.spacedBy(SpacingTokens.lg)
         ) {
-            Text(
-                text = if (isAvailable) "AVAILABLE" else "FALLBACK",
-                color = if (isAvailable) Color(0xFF10B981) else Color(0xFFEF4444),
-                fontWeight = FontWeight.Bold,
-                fontSize = 11.sp,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-            )
+            // Header
+            item {
+                FlatDarkHeader(
+                    title = "Diagnostics",
+                    onBack = onBack,
+                    backContentDescription = "Back",
+                    backTestTag = "diagnostics_back_button"
+                )
+            }
+
+            // Card 1: State Machine Flow Visualization
+            item {
+                Box(modifier = Modifier.padding(horizontal = 20.dp)) {
+                    FlatRoundedCard {
+                        Column(modifier = Modifier.padding(vertical = 16.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Vehicle State Machine",
+                                    style = Typography.titleMedium,
+                                    fontSize = 17.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = TextPrimary
+                                )
+
+                                Row(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(RadiusTokens.pill))
+                                        .background(StatusActiveGreen.copy(alpha = 0.15f))
+                                        .padding(horizontal = 10.dp, vertical = 4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(6.dp)
+                                            .clip(CircleShape)
+                                            .background(StatusActiveGreen)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = currentState,
+                                        style = Typography.labelMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = StatusActiveGreen
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(14.dp))
+
+                            // Steps visualizer
+                            val states = listOf("IDLE", "POSSIBLE", "VEHICLE", "ACTIVE", "LOW", "STOPPED")
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(RadiusTokens.md))
+                                    .background(FlatDarkBackground)
+                                    .padding(8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                states.forEach { s ->
+                                    val isMatch = currentState.startsWith(s) || (s == "ACTIVE" && currentState == "ACTIVE")
+                                    Text(
+                                        text = s,
+                                        fontSize = 10.sp,
+                                        fontWeight = if (isMatch) FontWeight.Bold else FontWeight.Normal,
+                                        color = if (isMatch) IosAccentBlue else TextMuted
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Card 2: Live Sensor Telemetry
+            item {
+                Box(modifier = Modifier.padding(horizontal = 20.dp)) {
+                    FlatRoundedCard {
+                        Column(modifier = Modifier.padding(vertical = 16.dp)) {
+                            Text(
+                                text = "Sensor Telemetry",
+                                style = Typography.titleMedium,
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = TextPrimary
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            TelemetryRow(
+                                label = "Linear Acceleration (m/s²)",
+                                value = "X: ${String.format("%+.2f", rawReading.linearAccelX)}  Y: ${String.format("%+.2f", rawReading.linearAccelY)}  Z: ${String.format("%+.2f", rawReading.linearAccelZ)}"
+                            )
+                            FlatCardDivider()
+                            TelemetryRow(
+                                label = "Gyroscope Angular Rate (rad/s)",
+                                value = "X: ${String.format("%+.2f", rawReading.gyroX)}  Y: ${String.format("%+.2f", rawReading.gyroY)}  Z: ${String.format("%+.2f", rawReading.gyroZ)}"
+                            )
+                            FlatCardDivider()
+                            TelemetryRow(
+                                label = "Target Cue Displacement",
+                                value = "ΔX: ${String.format("%+.2f", processedMotion.targetDisplacementX)}  ΔY: ${String.format("%+.2f", processedMotion.targetDisplacementY)}"
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Card 3: Hardware Sensor Integrity
+            item {
+                Box(modifier = Modifier.padding(horizontal = 20.dp)) {
+                    FlatRoundedCard {
+                        FlatListRow(
+                            title = "Accelerometer",
+                            subtitle = if (hardwareStatus.hasAccelerometer) "Hardware detected (High Precision)" else "Hardware missing",
+                            trailingContent = {
+                                StatusBadge(
+                                    text = if (hardwareStatus.hasAccelerometer) "OK" else "MISSING",
+                                    isSuccess = hardwareStatus.hasAccelerometer
+                                )
+                            }
+                        )
+                        FlatCardDivider()
+                        FlatListRow(
+                            title = "Gyroscope",
+                            subtitle = if (hardwareStatus.hasGyroscope) "Hardware detected (High Precision)" else "Hardware missing (Fallback active)",
+                            trailingContent = {
+                                StatusBadge(
+                                    text = if (hardwareStatus.hasGyroscope) "OK" else "FALLBACK",
+                                    isSuccess = hardwareStatus.hasGyroscope
+                                )
+                            }
+                        )
+                        FlatCardDivider()
+                        FlatListRow(
+                            title = "Overlay System Window",
+                            subtitle = if (hasOverlayPermission) "Permission granted" else "Permission required",
+                            trailingContent = {
+                                StatusBadge(
+                                    text = if (hasOverlayPermission) "GRANTED" else "REQUIRED",
+                                    isSuccess = hasOverlayPermission
+                                )
+                            }
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun MetricItem(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = label, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+private fun TelemetryRow(label: String, value: String) {
+    Column(modifier = Modifier.padding(vertical = 10.dp)) {
+        Text(text = label, style = Typography.bodySmall, color = TextSecondary)
+        Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = value,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.SemiBold,
             fontFamily = FontFamily.Monospace,
-            color = MaterialTheme.colorScheme.primary
+            fontSize = 13.sp,
+            color = TextPrimary
+        )
+    }
+}
+
+@Composable
+private fun StatusBadge(text: String, isSuccess: Boolean) {
+    val color = if (isSuccess) StatusActiveGreen else StatusWarningAmber
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(RadiusTokens.pill))
+            .background(color.copy(alpha = 0.12f))
+            .padding(horizontal = 10.dp, vertical = 4.dp)
+    ) {
+        Text(
+            text = text,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+            color = color
         )
     }
 }
