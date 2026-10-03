@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Kinetic Cues</string>
+    <string name="app_subtitle">Vehicle Motion Cues for Passengers</string>
+    <string name="status_ready">Ready to Activate</string>
+    <string name="status_active">Motion Cues Active</string>
+    <string name="status_paused">Motion Cues Paused</string>
+    <string name="status_stopped">Motion Idle (Cues Hidden)</string>
+    <string name="status_permission_needed">Overlay Permission Required</string>
+    <string name="status_sensors_unavailable">Motion Sensors Unavailable</string>
+
+    <string name="action_enable">Enable Motion Cues</string>
+    <string name="action_disable">Turn Off Motion Cues</string>
+    <string name="action_grant_permission">Grant Overlay Permission</string>
+    <string name="action_test_mode">Sensor &amp; Motion Simulator</string>
+    <string name="action_open_settings">Settings</string>
+    <string name="action_diagnostics">Sensor Diagnostics</string>
+    
+    <string name="notification_channel_name">Motion Cues Service</string>
+    <string name="notification_channel_desc">Active overlay service for vehicle motion cues</string>
+    <string name="notification_title">Kinetic Motion Cues Active</string>
+    <string name="notification_content">Displaying cues on screen edges based on vehicle inertia</string>
+    <string name="notification_action_stop">Turn Off</string>
+    <string name="notification_action_pause">Pause</string>
+    <string name="notification_action_resume">Resume</string>
+
+    <string name="tile_motion_cues">Kinetic Cues</string>
+    <string name="tile_state_active">Active</string>
+    <string name="tile_state_inactive">Off</string>
+    <string name="tile_state_permission_required">Permission Required</string>
+    <string name="action_add_qs_tile">Add Quick Settings Tile</string>
+    <string name="desc_add_qs_tile">Quickly toggle motion cues from your notification panel</string>
+
+    <string name="safety_disclaimer_title">Passenger Comfort Notice</string>
+    <string name="safety_disclaimer_body">This feature is intended exclusively for passengers. Do not use the phone or this feature while operating a vehicle. This application may help reduce motion discomfort by reconciling visual and vestibular sensory signals, but is not a medical treatment.</string>
+</resources>

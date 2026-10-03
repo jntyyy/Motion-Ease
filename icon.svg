@@ -1,0 +1,193 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1024 1024"
+     width="1024"
+     height="1024">
+
+  <defs>
+
+    <!-- Deeper soft gray background -->
+    <linearGradient id="background"
+      x1="0" y1="0"
+      x2="1024" y2="1024"
+      gradientUnits="userSpaceOnUse">
+
+      <stop offset="0%"
+        stop-color="#D7DADF"/>
+
+      <stop offset="50%"
+        stop-color="#C6CBD0"/>
+
+      <stop offset="100%"
+        stop-color="#B5BBC1"/>
+
+    </linearGradient>
+
+
+    <!-- Gentle center illumination -->
+    <radialGradient id="centerLight"
+      cx="50%" cy="48%" r="60%">
+
+      <stop offset="0%"
+        stop-color="#E4E6E9"
+        stop-opacity=".8"/>
+
+      <stop offset="100%"
+        stop-color="#B5BBC1"
+        stop-opacity="0"/>
+
+    </radialGradient>
+
+
+    <!-- Black glass-like dot -->
+    <radialGradient id="dot"
+      cx="30%" cy="25%" r="75%">
+
+      <stop offset="0%"
+        stop-color="#3A3D41"/>
+
+      <stop offset="48%"
+        stop-color="#17191C"/>
+
+      <stop offset="100%"
+        stop-color="#050607"/>
+
+    </radialGradient>
+
+  </defs>
+
+
+  <!-- Background -->
+
+  <rect
+    width="1024"
+    height="1024"
+    rx="230"
+    fill="url(#background)"/>
+
+
+  <!-- Subtle center light -->
+
+  <circle
+    cx="512"
+    cy="512"
+    r="370"
+    fill="url(#centerLight)"/>
+
+
+  <!-- ================================= -->
+  <!-- SURROUNDING MOTION CUES           -->
+  <!-- ================================= -->
+
+  <!-- TOP -->
+
+  <circle
+    cx="512"
+    cy="185"
+    r="38"
+    fill="url(#dot)"/>
+
+  <circle
+    cx="385"
+    cy="225"
+    r="27"
+    fill="#17191C"
+    opacity=".86"/>
+
+  <circle
+    cx="639"
+    cy="225"
+    r="27"
+    fill="#17191C"
+    opacity=".86"/>
+
+
+  <!-- RIGHT -->
+
+  <circle
+    cx="839"
+    cy="512"
+    r="38"
+    fill="url(#dot)"/>
+
+  <circle
+    cx="799"
+    cy="385"
+    r="27"
+    fill="#17191C"
+    opacity=".86"/>
+
+  <circle
+    cx="799"
+    cy="639"
+    r="27"
+    fill="#17191C"
+    opacity=".86"/>
+
+
+  <!-- BOTTOM -->
+
+  <circle
+    cx="512"
+    cy="839"
+    r="38"
+    fill="url(#dot)"/>
+
+  <circle
+    cx="385"
+    cy="799"
+    r="27"
+    fill="#17191C"
+    opacity=".86"/>
+
+  <circle
+    cx="639"
+    cy="799"
+    r="27"
+    fill="#17191C"
+    opacity=".86"/>
+
+
+  <!-- LEFT -->
+
+  <circle
+    cx="185"
+    cy="512"
+    r="38"
+    fill="url(#dot)"/>
+
+  <circle
+    cx="225"
+    cy="385"
+    r="27"
+    fill="#17191C"
+    opacity=".86"/>
+
+  <circle
+    cx="225"
+    cy="639"
+    r="27"
+    fill="#17191C"
+    opacity=".86"/>
+
+
+  <!-- ================================= -->
+  <!-- DOMINANT CENTER                   -->
+  <!-- ================================= -->
+
+  <circle
+    cx="512"
+    cy="512"
+    r="105"
+    fill="#050607"/>
+
+
+  <!-- Very subtle center highlight -->
+
+  <circle
+    cx="484"
+    cy="480"
+    r="28"
+    fill="#3A3D41"
+    opacity=".32"/>
+
+</svg>

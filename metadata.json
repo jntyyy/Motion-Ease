@@ -1,0 +1,6 @@
+{
+  "name": "Kinetic Cues",
+  "description": "Intelligent Vehicle Motion Cues overlay and motion processing to help reduce passenger motion sickness in moving vehicles.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

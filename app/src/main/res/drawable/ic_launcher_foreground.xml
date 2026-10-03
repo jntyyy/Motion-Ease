@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="1024"
+    android:viewportHeight="1024">
+
+    <group
+        android:pivotX="512"
+        android:pivotY="512"
+        android:scaleX="0.88"
+        android:scaleY="0.88">
+
+        <!-- ================================= -->
+        <!-- SURROUNDING MOTION CUES           -->
+        <!-- ================================= -->
+
+        <!-- TOP -->
+        <path android:pathData="M 512,147 A 38,38 0 1,0 512,223 A 38,38 0 1,0 512,147">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:centerX="500"
+                    android:centerY="175"
+                    android:gradientRadius="38"
+                    android:startColor="#3A3D41"
+                    android:centerColor="#17191C"
+                    android:endColor="#050607"
+                    android:type="radial" />
+            </aapt:attr>
+        </path>
+        <path
+            android:fillColor="#17191C"
+            android:fillAlpha="0.86"
+            android:pathData="M 385,198 A 27,27 0 1,0 385,252 A 27,27 0 1,0 385,198" />
+        <path
+            android:fillColor="#17191C"
+            android:fillAlpha="0.86"
+            android:pathData="M 639,198 A 27,27 0 1,0 639,252 A 27,27 0 1,0 639,198" />
+
+        <!-- RIGHT -->
+        <path android:pathData="M 839,474 A 38,38 0 1,0 839,550 A 38,38 0 1,0 839,474">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:centerX="827"
+                    android:centerY="502"
+                    android:gradientRadius="38"
+                    android:startColor="#3A3D41"
+                    android:centerColor="#17191C"
+                    android:endColor="#050607"
+                    android:type="radial" />
+            </aapt:attr>
+        </path>
+        <path
+            android:fillColor="#17191C"
+            android:fillAlpha="0.86"
+            android:pathData="M 799,358 A 27,27 0 1,0 799,412 A 27,27 0 1,0 799,358" />
+        <path
+            android:fillColor="#17191C"
+            android:fillAlpha="0.86"
+            android:pathData="M 799,612 A 27,27 0 1,0 799,666 A 27,27 0 1,0 799,612" />
+
+        <!-- BOTTOM -->
+        <path android:pathData="M 512,801 A 38,38 0 1,0 512,877 A 38,38 0 1,0 512,801">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:centerX="500"
+                    android:centerY="829"
+                    android:gradientRadius="38"
+                    android:startColor="#3A3D41"
+                    android:centerColor="#17191C"
+                    android:endColor="#050607"
+                    android:type="radial" />
+            </aapt:attr>
+        </path>
+        <path
+            android:fillColor="#17191C"
+            android:fillAlpha="0.86"
+            android:pathData="M 385,772 A 27,27 0 1,0 385,826 A 27,27 0 1,0 385,772" />
+        <path
+            android:fillColor="#17191C"
+            android:fillAlpha="0.86"
+            android:pathData="M 639,772 A 27,27 0 1,0 639,826 A 27,27 0 1,0 639,772" />
+
+        <!-- LEFT -->
+        <path android:pathData="M 185,474 A 38,38 0 1,0 185,550 A 38,38 0 1,0 185,474">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:centerX="173"
+                    android:centerY="502"
+                    android:gradientRadius="38"
+                    android:startColor="#3A3D41"
+                    android:centerColor="#17191C"
+                    android:endColor="#050607"
+                    android:type="radial" />
+            </aapt:attr>
+        </path>
+        <path
+            android:fillColor="#17191C"
+            android:fillAlpha="0.86"
+            android:pathData="M 225,358 A 27,27 0 1,0 225,412 A 27,27 0 1,0 225,358" />
+        <path
+            android:fillColor="#17191C"
+            android:fillAlpha="0.86"
+            android:pathData="M 225,612 A 27,27 0 1,0 225,666 A 27,27 0 1,0 225,612" />
+
+        <!-- ================================= -->
+        <!-- DOMINANT CENTER                   -->
+        <!-- ================================= -->
+        <path
+            android:fillColor="#050607"
+            android:pathData="M 512,407 A 105,105 0 1,0 512,617 A 105,105 0 1,0 512,407" />
+
+        <!-- Subtle center highlight -->
+        <path
+            android:fillColor="#3A3D41"
+            android:fillAlpha="0.32"
+            android:pathData="M 484,452 A 28,28 0 1,0 484,508 A 28,28 0 1,0 484,452" />
+
+    </group>
+
+</vector>
