@@ -1,0 +1,126 @@
+name: Build & Release Android App
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+    inputs:
+      create_release:
+        description: 'Publish a GitHub Release with APK & AAB'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build, Test & Package Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' }}
+
+      - name: Make Gradlew Executable
+        run: chmod +x ./gradlew
+
+      - name: Restore Debug Keystore
+        run: |
+          if [ -f debug.keystore.base64 ]; then
+            echo "Decoding debug.keystore from base64..."
+            base64 -d debug.keystore.base64 > debug.keystore
+          fi
+
+      - name: Prepare Release Signing Keystore
+        id: keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          SECRET_STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          SECRET_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "Using production keystore from repository secrets..."
+            echo "$KEYSTORE_BASE64" | base64 -d > my-upload-key.jks
+            echo "STORE_PASSWORD=${SECRET_STORE_PASSWORD}" >> $GITHUB_ENV
+            echo "KEY_PASSWORD=${SECRET_KEY_PASSWORD}" >> $GITHUB_ENV
+            echo "KEYSTORE_PATH=${GITHUB_WORKSPACE}/my-upload-key.jks" >> $GITHUB_ENV
+          else
+            echo "No custom release secret found. Generating self-signed upload keystore for CI release build..."
+            keytool -genkeypair -v \
+              -keystore my-upload-key.jks \
+              -alias upload \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -storepass releasepass \
+              -keypass releasepass \
+              -dname "CN=Kinetic Cues, OU=Mobile, O=AI Studio, L=Mountain View, ST=CA, C=US"
+            echo "STORE_PASSWORD=releasepass" >> $GITHUB_ENV
+            echo "KEY_PASSWORD=releasepass" >> $GITHUB_ENV
+            echo "KEYSTORE_PATH=${GITHUB_WORKSPACE}/my-upload-key.jks" >> $GITHUB_ENV
+          fi
+
+      - name: Run Unit Tests & Robolectric
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      - name: Build Release APK and AAB Bundle
+        run: |
+          ./gradlew :app:assembleRelease :app:bundleRelease --stacktrace
+
+      - name: Locate and Verify Build Outputs
+        id: outputs
+        run: |
+          echo "Listing generated APK files:"
+          ls -la app/build/outputs/apk/release/ || true
+          echo "Listing generated AAB files:"
+          ls -la app/build/outputs/bundle/release/ || true
+
+      - name: Upload Release APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kinetic-Cues-Release-APK
+          path: app/build/outputs/apk/release/*.apk
+          retention-days: 30
+
+      - name: Upload Release AAB Bundle Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kinetic-Cues-Release-AAB
+          path: app/build/outputs/bundle/release/*.aab
+          retention-days: 30
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.create_release == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/bundle/release/*.aab
+          generate_release_notes: true
+          draft: false
+          prerelease: false

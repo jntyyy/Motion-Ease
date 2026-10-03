@@ -30,6 +30,16 @@
     <string name="action_add_qs_tile">Add Quick Settings Tile</string>
     <string name="desc_add_qs_tile">Quickly toggle motion cues from your notification panel</string>
 
+    <string name="action_tap_to_start">Tap to start motion cues</string>
+    <string name="action_tap_to_stop">Tap to stop motion cues</string>
+    <string name="action_tap_to_resume">Tap to resume motion cues</string>
+    <string name="action_grant">Grant</string>
+    <string name="permission_banner_desc">Required to display smooth inertia cues over other apps while riding</string>
+    <string name="settings_section_general">General</string>
+    <string name="settings_motion_mode">Motion Mode</string>
+    <string name="btn_simulator">Simulator</string>
+    <string name="btn_diagnostics">Diagnostics</string>
+
     <string name="safety_disclaimer_title">Passenger Comfort Notice</string>
     <string name="safety_disclaimer_body">This feature is intended exclusively for passengers. Do not use the phone or this feature while operating a vehicle. This application may help reduce motion discomfort by reconciling visual and vestibular sensory signals, but is not a medical treatment.</string>
 </resources>

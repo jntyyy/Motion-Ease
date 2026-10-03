@@ -14,6 +14,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -76,7 +77,10 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    contentWindowInsets = WindowInsets(0, 0, 0, 0)
+                ) { _ ->
                     when (currentScreen) {
                         AppScreen.DASHBOARD -> {
                             DashboardScreen(
@@ -104,11 +108,14 @@ class MainActivity : ComponentActivity() {
                             SettingsScreen(
                                 settings = settings,
                                 onUpdateSettings = { transform -> viewModel.updateSettings(transform) },
-                                onOpenDiagnostics = { currentScreen = AppScreen.DIAGNOSTICS },
-                                onOpenOemGuide = { showOemGuideDialog = true },
+                                onSelectMode = { newMode ->
+                                    viewModel.updateSettings { it.copy(mode = newMode) }
+                                },
                                 onAddQuickSettingsTile = {
                                     requestAddQuickSettingsTile(onShowManualGuide = { showQsGuideDialog = true })
                                 },
+                                onOpenDiagnostics = { currentScreen = AppScreen.DIAGNOSTICS },
+                                onOpenOemGuide = { showOemGuideDialog = true },
                                 onBack = { currentScreen = AppScreen.DASHBOARD }
                             )
                         }

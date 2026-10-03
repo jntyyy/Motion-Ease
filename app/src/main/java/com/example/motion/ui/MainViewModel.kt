@@ -68,12 +68,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val current = settings.value
 
         if (!current.isEnabled) {
-            if (!hasOverlayPermission.value) {
-                // Must grant overlay permission first
-                return
-            }
             settingsRepository.updateSettings { it.copy(isEnabled = true, isPaused = false) }
-            MotionCueService.startService(context)
+            if (hasOverlayPermission.value) {
+                MotionCueService.startService(context)
+            }
         } else {
             settingsRepository.updateSettings { it.copy(isEnabled = false, isPaused = false) }
             MotionCueService.stopService(context)
